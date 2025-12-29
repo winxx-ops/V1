@@ -1,8 +1,8 @@
-name: Build Android APK
+ name: Build Android APK
 
 on:
   push:
-    branches: [ main ] # This triggers the build when you upload code
+    branches: [ main ] # Runs every time you push code to the 'main' branch
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install Dependencies
         run: npm install
@@ -23,10 +24,9 @@ jobs:
       - name: Build Web App
         run: npm run build
         env:
-          # This pulls your Gemini Key from the "Secrets" you set in Step 2
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-      - name: Setup Java
+      - name: Install Android SDK & Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
@@ -43,8 +43,8 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-app-bundle
+          name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
